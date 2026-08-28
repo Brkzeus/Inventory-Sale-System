@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # 1. Containerized SQL Server 2022
+  inventory.db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: inventory_sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourSecurePassword123!
+    ports:
+      - "1433:1433"
+
+  # 2. Your Web API Container
+  inventorysystem.api:
+    image: ${DOCKER_REGISTRY-}inventorysystemapi
+    container_name: inventory_webapi
+    build:
+      context: .
+      dockerfile: InventorySystem.API/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=inventory.db;Database=InventoryDb;User Id=sa;Password=YourSecurePassword123!;TrustServerCertificate=True;
+    depends_on:
+      - inventory.db
