@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using InventorySystem_Infrastructure;
 
+using System;
+
 namespace InventorySystem_Infrastructure.Repositories
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable 
     {
         IUserRepository Users { get; }
         IProductRepository Products { get; }

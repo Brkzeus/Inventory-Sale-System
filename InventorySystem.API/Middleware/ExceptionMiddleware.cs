@@ -1,7 +1,12 @@
-﻿using InventorySystem_Core.DTOs.ErrorDTOs;
-using InventorySystem_Core.Exceptions;
+﻿
+
+
 using System.Net;
 using System.Text.Json;
+using InventorySystem_Core.DTOs.ErrorDTOs;
+using InventorySystem_Core.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace InventorySystem.API.Middleware
 {
@@ -25,23 +30,7 @@ namespace InventorySystem.API.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
-
-                context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-                var errResponse = new
-                {
-                    statusCode = 500,
-                    message = ex.Message,
-                    detail = ex.InnerException?.Message ?? ex.StackTrace
-                };
-
-                var json = JsonSerializer.Serialize(errResponse, new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
-
-                await context.Response.WriteAsync(json);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
@@ -52,10 +41,10 @@ namespace InventorySystem.API.Middleware
             // Map custom exception types to appropriate HTTP status codes
             var statusCode = exception switch
             {
-                NotFoundException => HttpStatusCode.NotFound,           // 404
-                BadRequestException => HttpStatusCode.BadRequest,       // 400
+                NotFoundException => HttpStatusCode.NotFound,            // 404
+                BadRequestException => HttpStatusCode.BadRequest,        // 400
                 UnauthorizedAccessException => HttpStatusCode.Unauthorized, // 401
-                _ => HttpStatusCode.InternalServerError                 // 500
+                _ => HttpStatusCode.InternalServerError                  // 500
             };
 
             context.Response.StatusCode = (int)statusCode;
@@ -64,7 +53,7 @@ namespace InventorySystem.API.Middleware
             {
                 StatusCode = context.Response.StatusCode,
                 Message = exception.Message,
-                Details = statusCode == HttpStatusCode.InternalServerError? "An unexpected error occurred on the server." : exception.StackTrace
+                Details = statusCode == HttpStatusCode.InternalServerError ? "An unexpected error occurred on the server." : exception.StackTrace ?? string.Empty
             };
 
             var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };

@@ -10,7 +10,7 @@ namespace InventorySystem_Core.DTOs.CategoryDTOs
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Category Description is required.")]
-        [StringLength(1000, ErrorMessage = "Category Description can't be longer than 1000 chaarcters")]
+        [StringLength(1000, ErrorMessage = "Category Description can't be longer than 1000 characters")]
 
         public string Description { get; set; } = string.Empty;
 

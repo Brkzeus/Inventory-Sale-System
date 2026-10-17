@@ -61,7 +61,7 @@ public class ProductService : IProductService
 
     public async Task<APIResponse<ProductResponseDTO>> CreateAsync(CreateProductDTO dto)
     {
-        if (dto.price <= 0)
+        if (dto.Price <= 0) 
         {
             return APIResponse<ProductResponseDTO>.FailureResponse(
                 "Validation failed",
@@ -73,7 +73,7 @@ public class ProductService : IProductService
         {
             Name = dto.Name,
             Description = dto.Description,
-            Price = dto.price,
+            Price = dto.Price, 
             StockQuantity = dto.StockQuantity,
             CategoryId = dto.CategoryId
         };

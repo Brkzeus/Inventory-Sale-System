@@ -45,7 +45,7 @@ public class AuthService : IAuthService
             Username = dto.Username,
             passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = string.IsNullOrWhiteSpace(dto.Role) ? UserRoles.Customer : dto.Role,
-            CreatedAt = DateTime.UtcNow // MUST be explicitly set
+            CreatedAt = DateTime.UtcNow 
         };
 
         await _unitOfWork.Users.AddAsync(newUser);
